@@ -37,6 +37,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # used by the social account app to create the proper callback URLs
+    # when connecting via social media accounts.
+    'django.contrib.sites',
+    'allauth',
+    # allauth app that allows the basic user account stuff
+    # like logging in and out. User registration and password resets.
+    'allauth.account',
+    # handles logging in via social media providers like Facebook and Google
+    'allauth.socialaccount',
 ]
 
 MIDDLEWARE = [
@@ -59,6 +68,9 @@ TEMPLATES = [
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
+                # required by allauth, it allows allauth and django access the
+                # HTTP request object in our templates. i.e. we want access
+                # request.user or request.user.email in our django templates
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -66,6 +78,38 @@ TEMPLATES = [
         },
     },
 ]
+
+# Allow users to log into our store via their email address which at the time
+# still isn't supported by default in django.
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# used by the social account app to create the proper callback URLs
+# when connecting via social media accounts.
+SITE_ID = 1
+
+# Temporarily log emails to the console so we can get the confirmation links.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# tells allauth that we want to allow authentication using either
+# usernames or emails
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# make it so that an email is required to register for the site.
+ACCOUNT_EMAIL_REQUIRED = True
+# Verifying your email is mandatory so we know users are using a real email.
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+# required to enter their email twice on the registration page
+# to make sure that they haven't made any typos.
+ACCOUNT_SIGNUP_EMAIL_ENTER_TWICE = True
+ACCOUNT_USERNAME_MIN_LENGTH = 4
+# specifying a login url and a url to redirect back to after logging in.
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'boutique.wsgi.application'
 
