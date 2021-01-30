@@ -165,4 +165,17 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# tell Django where all of our static files are located.
+# Since they're located in the project level static folder.
+# All we need to do is os.path.join(BASE_DIR, 'static')
+# although normally we would also want to supply a static route
+# setting here for Django's collectstatic utility to work.I'm not going
+# to do that because it will interfere with setting up AWS later on
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+# to allow Django to see the MEDIA_URL. We need to go to urls.py
+# Import our settings and the static function from django.conf.urls.static
+# And use the static function to add the MEDIA_URL to our list of URLs.
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
