@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_header %}
+
+    <div class="container header-container">
+        <div class="row">
+            <div class="col">
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <!-- If you remember the context from our all products view we have a template variable available to us called products.
+                simply render that out and make sure that we can see the products.-->
+                {{ products }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
