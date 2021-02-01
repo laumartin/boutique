@@ -11,12 +11,97 @@
     </div>
 {% endblock %}
 {% block content %}
-    <div class="container">
+    <div class="overlay">
+        
+    </div>
+    <div class="container-fluid">
         <div class="row">
-            <div class="col">
+            <div class="product-container col-10 offset-1">
+                <div class="row mt-1 mb-2">
+
+                </div>
+                <div class="row">
                 <!-- If you remember the context from our all products view we have a template variable available to us called products.
-                simply render that out and make sure that we can see the products.-->
-                {{ products }}
+                simply render that out and make sure that we can see the products.
+                Django for loop to iterate through the product variable.For each product, I want to generate a 
+                    column inside which will be a bootstrap card.-->
+                    {% for product in products %}
+                    <!-- Products will stack on mobile be side-by-side on small and medium screens split into three columns on large.
+                    And four columns on extra-large-->
+                        <div class="col-sm-6 col-md-6 col-lg-4 col-xl-3">
+                            <div class="card h-100 border-0">
+                                {% if product.image %}
+                                <!-- The card is divided into a top. Which contains our product image. it uses an if statement that renders the product image
+                                using the image fields URL attribute if an image exists. Or the default image from the media folder otherwise-->
+                                    <a href="">
+                                        <img class="card-img-top img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
+                                    </a>
+                                {% else %}
+                                    <a href="">
+                                        <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
+                                    </a>
+                                {% endif %}
+                                <!-- A card body which will contain the product name. -->
+                                <div class="card-body pb-0">
+                                    <p class="mb-0">{{ product.name }}</p>
+                                </div>
+                                <!--And a footer containing the price and rating. contains a row and a column which will envelop the 
+                                product price and rating if one exists.-->
+                                <div class="card-footer bg-white pt-0 border-0 text-left">
+                                    <div class="row">
+                                        <div class="col">
+                                            <p class="lead mb-0 text-left font-weight-bold">${{ product.price }}</p>
+                                            {% if product.rating %}
+                                                <small class="text-muted"><i class="fas fa-star mr-1"></i>{{ product.rating }} / 5</small>
+                                            {% else %}
+                                                <small class="text-muted">No Rating</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- On mobile products will be stacked on top of each other so if we want a full-width horizontal rule then
+                        we need to render it after every single product. The problem with this is when rendering a full width column it pushes 
+                        all the products to the next row on all screens. We can fix that by using the display small none class hich will prevent 
+                        this column from rendering on everything except extra small screens.-->
+                        
+                        <!-- now we don't have the horizontal rule on small or medium screens where there are two products in each row so we add 
+                        another column which will be display: none by default to keep it hidden on extra small screens. And display block on
+                        small screens and larger.
+                        The solution is we need to render this column on small and medium screens only when the iteration number of the loop is 
+                        divisible by two.Because there will be two six-column products in each row so every set of two products, because that'll 
+                        add up to twelve columns.-->
+                        {% if forloop.counter|divisibleby:1 %}
+                            <!-- if for loop.counter is divisible by 4 will have 4 products per row, render the extra one every 4 columns.-->
+                            <div class="col-12 d-sm-none mb-5">
+                                <hr>
+                            </div>
+                        {% endif %}
+
+                        {% if forloop.counter|divisibleby:2 %}
+                            <!-- if for loop.counter is divisible by two render this column and it'll be visible only on small and medium screens. 
+                            So we'll use display small block, Display medium block and display large none to hide it on large and up.-->
+                            <div class="col-12 d-none d-sm-block d-md-block d-lg-none mb-5">
+                                <hr>
+                            </div>
+                        {% endif %}
+
+                        {% if forloop.counter|divisibleby:3 %}
+                            <!-- if for loop.counter is divisible by 3 hide everything except large.-->
+                            <div class="col-12 d-none d-lg-block d-xl-none mb-5">
+                                <hr>
+                            </div>
+                        {% endif %}
+
+                        {% if forloop.counter|divisibleby:4 %}
+                            <!-- if for loop.counter is divisible by 4 will have 4 products per row, render the extra one every 4 columns.-->
+                            <div class="col-12 d-none d-xl-block mb-5">
+                                <hr>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>
