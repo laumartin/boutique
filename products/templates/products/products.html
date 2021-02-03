@@ -16,6 +16,12 @@
     </div>
     <div class="container-fluid">
         <div class="row">
+            <div class="col text-center mt-3">
+                <h2 class="logo-front">Products</h2>
+                <hr class="w-50 mb-1">
+            </div>
+        </div>
+        <div class="row">
             <div class="product-container col-10 offset-1">
                 <div class="row mt-1 mb-2">
 
@@ -33,11 +39,11 @@
                                 {% if product.image %}
                                 <!-- The card is divided into a top. Which contains our product image. it uses an if statement that renders the product image
                                 using the image fields URL attribute if an image exists. Or the default image from the media folder otherwise-->
-                                    <a href="">
+                                    <a href="{% url 'product_detail' product.id %}">
                                         <img class="card-img-top img-fluid" src="{{ product.image.url }}" alt="{{ product.name }}">
                                     </a>
                                 {% else %}
-                                    <a href="">
+                                    <a href="{% url 'product_detail' product.id %}">
                                         <img class="card-img-top img-fluid" src="{{ MEDIA_URL }}noimage.png" alt="{{ product.name }}">
                                     </a>
                                 {% endif %}
