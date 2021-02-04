@@ -45,8 +45,10 @@
                 </a>
             </div>
             <div class="col-12 col-lg-4 my-auto py-1 py-lg-0">
-                <!-- we'll be submitting searches as url parameters in the form-->
-                <form method="GET" action="">
+                <!-- we'll be submitting searches as url parameters in the form
+                when we submit a search query.It'll end up in the url as a get parameter.
+                We can access those url parameters in the all_products view-->
+                <form method="GET" action="{% url 'products' %}">
                     <div class="input-group w-100">
                         <!-- the text input with the name of q from query is what will be submitted to the action url-->
                         <input class="form-control border border-black rounded-0" type="text" name="q" placeholder="Search">
