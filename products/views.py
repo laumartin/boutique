@@ -15,12 +15,40 @@ def all_products(request):
     # set none to not get error when loading products page without search term.
     query = None
     categories = None
+    sort = None
+    direction = None
     # when we submit a search query It'll end up in the url as a get parameter.
     # We can access those url parameters in the all_products view by checking
     # whether request.get exists. Since we named the text input in the form q.
     # We can just check if q is in request.get If it is I'll set it equal to
     # a variable called query.
     if request.GET:
+        if 'sort' in request.GET:
+            sortkey = request.GET['sort']
+            # reason for copying the sort parameter into a new variable called
+            # sortkey is because now we've preserved the original field we want
+            # it to sort on name,but we have the actual field we sort on,
+            # lower_name in the sort key variable.If renamed sort itself to
+            # lower_name we would have lost the original field name.
+            sort = sortkey
+            # To allow case-insensitive sorting on the name field,first
+            # annotate all the products with a new field.Annotation allows
+            # add a temporary field on a model. check whether the sort key
+            # is equal to name,if it is will set it to lower_name, which is
+            # the field we're about to create with the annotation.
+            if sortkey == 'name':
+                sortkey = 'lower_name'
+                products = products.annotate(lower_name=Lower('name'))
+
+            # check whether it's descending,if so add a minus in front of
+            # sort key using string formatting, which will reverse the order.
+            if 'direction' in request.GET:
+                direction = request.GET['direction']
+                if direction == 'desc':
+                    sortkey = f'-{sortkey}'
+            products = products.order_by(sortkey)
+
+
         # if category exists in requests.get split it into a list at the commas
         # then use that list to filter the current query set of all products
         # down to only products whose category name is in the list.
@@ -49,6 +77,8 @@ def all_products(request):
             # pass them to the filter method to actually filter the products.
             products = products.filter(queries)
 
+    current_sorting = f'{sort}_{direction}'
+
     # add that to the context so our products will be available in template.
     context = {
         'products': products,
@@ -57,6 +87,7 @@ def all_products(request):
         # call that list of category objects, current_categories, and return
         # it to the context so we can use it in the template later on.
         'current_categories': categories,
+        'current_sorting': current_sorting
     }
 
     # A view to show all products, including sorting and search queries
