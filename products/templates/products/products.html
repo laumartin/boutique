@@ -158,4 +158,56 @@
             </div>
         </div>
     </div>
+    <div class="btt-button shadow-sm rounded-0 border border-black">
+        <a class="btt-link d-flex h-100">
+            <i class="fas fa-arrow-up text-black mx-auto my-auto"></i>
+        </a>	
+    </div>
+
+{% endblock %}
+
+{% block postloadjs %}
+<!-- Using block.super will ensure we append this code to anything already in the block as opposed to replacing it.-->
+    {{ bock.super }}
+    <script type="text/javascript">
+		$('.btt-link').click(function(e) {
+			window.scrollTo(0,0)
+		})
+    </script>
+    
+    <script type="text/javascript">
+    /* capture the change event from the source selector itself.Inside set a variable for the selector equal to this.
+    And one for the current url which is equal to a new url object that takes in the current Windows location.
+    Using the url object will give us the ability to replace the current get parameters which is required in order to
+    update the sorting methodology.*/
+        $('#sort-selector').change(function() {
+            var selector =$(this);
+            var currentUrl= new URL(window.location);
+
+            /* get the selected value from the selector box(this value refers to the value attribute from the selected option element
+            in the selector box) Once I have it,if statement to determine if the selected value is reset, if it is, reset the sorting
+            to the default that we would see on the products page. If is not, get the sort and direction by splitting the selected
+            value at the underscore.
+            In this case, the first item from the split will be the item we're sorting on, second will be the direction asc or desc.*/
+            var selectedVal = selector.val();
+            if(selectedVal != "reset"){
+                var sort = selectedVal.split("_")[0];
+                var direction = selectedVal.split("_")[1];
+
+                /* replace those sort and direction get parameters in the URL uing the search params.set method from the URL object.*/
+                currentUrl.searchParams.set("sort", sort);
+                currentUrl.searchParams.set("direction", direction);
+
+                /* with the new URL constructed replace the current location using window.location.replace with the updated current URL
+                Replacing the location will also cause the page to reload which will resort the products accordingly*/
+                window.location.replace(currentUrl);
+            /*  If the user has selected the reset option, delete the sort and direction get parameters and then replace the location.*/
+            } else{
+                currentUrl.searchParams.delete("sort");
+                currentUrl.searchParams.delete("direction");
+
+                window.location.replace(currentUrl);
+            }
+        })
+    </script>
 {% endblock %}

@@ -3,6 +3,7 @@ from django.contrib import messages
 # If the query isn't blank,use a special object from Jango.db.models
 # called Q to generate a search query.
 from django.db.models import Q
+from django.db.models.functions import Lower
 # we should grab those categories anyway so we can display for the user
 # which categories they currently have selected.For that,import category
 from .models import Product, Category
