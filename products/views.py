@@ -39,6 +39,13 @@ def all_products(request):
             if sortkey == 'name':
                 sortkey = 'lower_name'
                 products = products.annotate(lower_name=Lower('name'))
+                # in order to force categories to be sorted by name instead of
+                # their ids check if the sort key is = category, if it is,
+                # adjust it to tack on __name.This __ syntax allows to drill
+                # into a related model. By doing this we're changing line 56
+                # to products.order by category__name
+            if sortkey == 'category':
+                sortkey = 'category__name'
 
             # check whether it's descending,if so add a minus in front of
             # sort key using string formatting, which will reverse the order.
