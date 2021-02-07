@@ -1,5 +1,8 @@
 from decimal import Decimal
 from django.conf import settings
+from django.shortcuts import get_object_or_404
+from products.models import Product
+
 # the function is taking request as a parameter and will return
 # a dictionary called context
 
@@ -18,6 +21,28 @@ def bag_contents(request):
     bag_items = []
     total = 0
     product_count = 0
+    # Accessing the shopping bag in the session. Getting it if it already
+    # exists. Or initializing it to an empty dictionary if not.
+    bag = request.session.get('bag', {})
+
+    # for each item and quantity in bag.items(this is the bag from the session)
+    # get the product.Then add its quantity times the price to the total.
+    # And then increment the product count by the quantity.
+    for item_id, quantity in bag.items():
+        product = get_object_or_404(Product, pk=item_id)
+        total += quantity * product.price
+        product_count += quantity
+        # add a dictionary to the list of bag items containing not only id and
+        # the quantity,but also the product object itself because that will
+        # give us access to all the other fields such as the product image etc
+        bag_items.append({
+            'item_id': item_id,
+            'quantity': quantity,
+            'product': product
+        })
+
+
+
     # customers have free delivery if they spend more than the amount
     # specified in the free delivery threshold in settings.py.
     # If it is less than threshold we'll calculate delivery as total
