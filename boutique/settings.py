@@ -80,6 +80,11 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # anytime we need to access the bag contents in any template
+                # across the entire site they'll be available to us without
+                # having to return them from a whole bunch of different views
+                # acrossdifferent apps.
+                'bag.contexts.bag_contents'
             ],
         },
     },
@@ -181,3 +186,7 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 # And use the static function to add the MEDIA_URL to our list of URLs.
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# add 2 new variables which will be used to calculate delivery costs
+FREE_DELIVERY_THRESHOLD = 50
+STANDARD_DELIVERY_PERCENTAGE = 10
