@@ -27,20 +27,41 @@ def bag_contents(request):
 
     # for each item and quantity in bag.items(this is the bag from the session)
     # get the product.Then add its quantity times the price to the total.
-    # And then increment the product count by the quantity.
-    for item_id, quantity in bag.items():
-        product = get_object_or_404(Product, pk=item_id)
-        total += quantity * product.price
-        product_count += quantity
-        # add a dictionary to the list of bag items containing not only id and
-        # the quantity,but also the product object itself because that will
-        # give us access to all the other fields such as the product image etc
-        bag_items.append({
-            'item_id': item_id,
-            'quantity': quantity,
-            'product': product
-        })
-
+    # And then increment the product count by the quantity(item_data).
+    # In the case of item with no sizes. The item data will be the quantity
+    # in the case of an item that has sizes the sitem data will be a dictionary
+    # of all the items by size.
+    for item_id, item_data in bag.items():
+        # if the item data is an integer then we know the item data is just the
+        # quantity.Otherwise we know it's a dictionary we handle it differently
+        if isinstance(item_data, int):
+            product = get_object_or_404(Product, pk=item_id)
+            total += item_data * product.price
+            product_count += item_data
+            # add a dictionary to the list of bag items containing id and
+            # quantity,but also the product object itself because that will
+            # give access to all the other fields such as the product image etc
+            bag_items.append({
+                'item_id': item_id,
+                'quantity': item_data,
+                'product': product
+            })
+        # Otherwise we know it's a dictionary we need to handle it differently.
+        # need to iterate through the inner dictionary of items_by_size
+        # incrementing the product count and total accordingly.
+        else:
+            product = get_object_or_404(Product, pk=item_id)
+            for size, quantity in item_data['items_by_size'].items():
+                total += quantity * product.price
+                product_count += quantity
+                # for each of these items,add the size to the bag items
+                # returned to the template as well.
+                bag_items.append({
+                    'item_id': item_id,
+                    'quantity': item_data,
+                    'product': product,
+                    'size': size
+                })
 
 
     # customers have free delivery if they spend more than the amount
