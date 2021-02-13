@@ -58,7 +58,7 @@ def bag_contents(request):
                 # returned to the template as well.
                 bag_items.append({
                     'item_id': item_id,
-                    'quantity': item_data,
+                    'quantity': quantity,
                     'product': product,
                     'size': size
                 })
