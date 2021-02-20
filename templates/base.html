@@ -128,7 +128,21 @@
 
     {% if messages %}
         <div class="message-container">
-
+            <!-- Djanggo messages have levels which are classifiers like debug info error and so on for different message types
+            they can be represented with an integer as well.So we can choose which of our includes we want to render based on the message level.-->
+            {% for message in messages %}
+                {% with message.level as level %}
+                    {% if level == 40 %}
+                        {% include 'includes/toasts/toast_error.html' %}
+                    {% elif level == 30 %}
+                        {% include 'includes/toasts/toast_warning.html' %}
+                    {% elif level == 25 %}
+                        {% include 'includes/toasts/toast_success.html' %}
+                    {% else %}
+                        {% include 'includes/toasts/toast_info.html' %}
+                    {% endif %}
+                {% endwith %}
+            {% endfor %}
         </div>
     {% endif %}
 
@@ -139,6 +153,12 @@
     {% endblock %}
 
     {% block postloadjs %}
+    <script type="text/javascript">
+    // call the toast method from bootstrap with an option of show on any elements with the toast class that have been rendered in the messages container
+    // This also explains why for all this time we've been including block dot super in our templates when overriding the post loadjs block.
+    // By doing that we ensure that any JavaScript we've written in the templates that extend this one won't overwrite this call to show all the toasts.
+        $('.toast').toast('show');
+    </script>
     {% endblock %}
 
 

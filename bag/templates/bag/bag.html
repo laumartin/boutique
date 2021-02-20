@@ -49,7 +49,7 @@
                                         <img class="img-fluid rounded" src="{{ item.product.image.url }}">
                                     </td>
                                     <td class="py-3">
-                                        <p class="my-0"><strong>{{ item.product.name | calc_subtotal:item.quantity }}</strong></p>
+                                        <p class="my-0"><strong>{{ item.product.name }}</strong></p>
                                         <p class="my-0"><strong>Size: </strong>{% if item.product.has_sizes %}{{ item.size|upper }}{% else %}N/A{% endif %}</p>
                                         <p class="my-0 small text-muted">SKU: {{ item.product.sku|upper }}</p>
                                     </td>
@@ -93,7 +93,7 @@
 
                                     </td>
                                     <td class="py-3">
-                                        <p class="my-0">{{ item.product.price }}</p>
+                                        <p class="my-0">{{ item.product.price | calc_subtotal:item.quantity }}</p>
                                     </td>
                                 </tr>
                             {% endfor %}

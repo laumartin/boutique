@@ -89,6 +89,10 @@ TEMPLATES = [
         },
     },
 ]
+# tell it to store messages in the session this is often not a required step
+# because there is a default which falls back to this storage method but due
+# to the use of git pod in these recordings it's require
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 # Allow users to log into our store via their email address which at the time
 # still isn't supported by default in django.

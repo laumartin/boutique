@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect, reverse, HttpResponse
+from django.contrib import messages
+
+from products.models import Product
 
 
 def view_bag(request):
@@ -12,6 +15,9 @@ def view_bag(request):
 # or update the quantity if it already exists.
 def add_to_bag(request, item_id):
     """ Add a quantity of the specified product to the shopping bag """
+
+    product = Product.objects.get(pk=item_id)
+
     # Get the quantity form the form, we need to convert it to an integer
     # since it'll come from the template as a string.
     quantity = int(request.POST.get('quantity'))
@@ -52,7 +58,6 @@ def add_to_bag(request, item_id):
             bag[item_id] = {'items_by_size': {size: quantity}}
 
     else:
-
         if item_id in list(bag.keys()):
             # I can just stuff the product into dictionary along with the quantity.
             # if there's already a key in bag dictionary matching this product id
@@ -60,6 +65,7 @@ def add_to_bag(request, item_id):
             bag[item_id] += quantity
         else:
             bag[item_id] = quantity
+            messages.success(request, f'Added {product.name} to your bag')
 
     request.session['bag'] = bag
 
@@ -96,7 +102,7 @@ def adjust_bag(request, item_id):
             bag.pop(item_id)
 
     request.session['bag'] = bag
-    return redirect(reverse(view_bag))
+    return redirect(reverse('view_bag'))
 
 
 # allow users to remove items directly without setting quantity to zero.
