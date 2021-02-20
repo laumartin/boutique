@@ -129,7 +129,8 @@
     {% if messages %}
         <div class="message-container">
             <!-- Djanggo messages have levels which are classifiers like debug info error and so on for different message types
-            they can be represented with an integer as well.So we can choose which of our includes we want to render based on the message level.-->
+            they can be represented with an integer as well.So we can choose which of our includes we want to render based on the message level.
+        In Django a message of level 40 is an error, level 30 a warning and 25 sucess-->
             {% for message in messages %}
                 {% with message.level as level %}
                     {% if level == 40 %}
