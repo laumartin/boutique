@@ -49,7 +49,10 @@ INSTALLED_APPS = [
     'home',
     'products',
     'bag',
-    'checkout'
+    'checkout',
+
+    # Other
+    'crispy_forms'
 ]
 
 MIDDLEWARE = [
@@ -63,6 +66,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'boutique.urls'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 TEMPLATES = [
     {
@@ -81,12 +86,23 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # access the no image file in the media folder if a product
+                # doesn't have an image.
+                'django.template.context_processors.media',
                 # anytime we need to access the bag contents in any template
                 # across the entire site they'll be available to us without
                 # having to return them from a whole bunch of different views
                 # acrossdifferent apps.
                 'bag.contexts.bag_contents'
             ],
+            # add a list called built-ins which will contain all the tags we
+            # want available in all our templates by default from
+            # crispy_forms.template_tags we want to add both crispy_forms_tags
+            # and crispy_forms_field.
+            'builtins': [
+                'crispy_forms.templatetags.crispy_forms_tags',
+                'crispy_forms.templatetags.crispy_forms_field',
+            ]
         },
     },
 ]
