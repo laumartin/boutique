@@ -44,7 +44,7 @@ def bag_contents(request):
             bag_items.append({
                 'item_id': item_id,
                 'quantity': item_data,
-                'product': product
+                'product': product,
             })
         # Otherwise we know it's a dictionary we need to handle it differently.
         # need to iterate through the inner dictionary of items_by_size

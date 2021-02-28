@@ -16,16 +16,16 @@ class Order(models.Model):
     email = models.EmailField(max_length=254, null=False, blank=False)
     phone_number = models.CharField(max_length=20, null=False, blank=False)
     country = models.CharField(max_length=40, null=False, blank=False)
-    postcode = models.CharField(max_length=20, null=False, blank=True)
+    postcode = models.CharField(max_length=20, null=True, blank=True)
     town_or_city = models.CharField(max_length=40, null=False, blank=False)
     street_address1 = models.CharField(max_length=80, null=False, blank=False)
-    street_address2 = models.CharField(max_length=80, null=False, blank=True)
-    county = models.CharField(max_length=80, null=False, blank=True)
+    street_address2 = models.CharField(max_length=80, null=True, blank=True)
+    county = models.CharField(max_length=80, null=True, blank=True)
     # automatically set order date and time whenever a new order is created.
     date = models.DateTimeField(auto_now_add=True)
     delivery_cost = models.DecimalField(max_digits=6, decimal_places=2, null=False, default=0)
     order_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
-    grand_total = models.DecimalField(max_digits=6, decimal_places=2, null=False, default=0)
+    grand_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
 
 # prepended with an underscore by convention to indicate it's a
 # private method which will only be used inside this class.
@@ -88,12 +88,12 @@ class OrderLineItem(models.Model):
     # There's also a foreign key to the product for this line item
     # so we can access all the fields of the associated product.
     product = models.ForeignKey(
-        Order, null=False, blank=False, on_delete=models.CASCADE)
+        Product, null=False, blank=False, on_delete=models.CASCADE)
     product_size = models.CharField(
         max_length=2, null=True, blank=True)  # XS, S, M, L, XL
     quantity = models.IntegerField(null=False, blank=False, default=0)
     lineitem_total = models.DecimalField(
-        max_digits=6, decimal_places=2, null=False, blank=False, editable=False)
+      max_digits=6, decimal_places=2, null=False, blank=False, editable=False)
 
 
     # Like setting the order number on the order model we also need to
@@ -102,8 +102,10 @@ class OrderLineItem(models.Model):
     # rice by the quantity for each line item.
 
     def save(self, *args, **kwargs):
-        """Override original save method to set the lineitem
-        total and update the order total"""
+        """
+        Override original save method to set the lineitem
+        total and update the order total
+        """
         self.lineitem_total = self.product.price * self.quantity
         super().save(*args, **kwargs)
 
