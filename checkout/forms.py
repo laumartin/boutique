@@ -16,9 +16,10 @@ class OrderForm(forms.ModelForm):
 
     # call the default init method to set the form up as it would be by default
     def __init__(self, *args, **kwargs):
-        # Add placeholders and classes, remove auto-generated
-        # labels and set autofocus on first field
-
+        """
+        Add placeholders and classes, remove auto-generated
+        labels and set autofocus on first field
+        """
         super().__init__(*args, **kwargs)
         # a dictionary of placeholders which will show up in form fields rather
         # than having clunky looking labels and empty text boxes in template
