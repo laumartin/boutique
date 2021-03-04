@@ -59,6 +59,9 @@ form.addEventListener('submit', function(ev) {
     // disable both the card element and the submit button to prevent multiple submissions.
     card.update({ 'disabled': true});
     $('#submit-button').attr('disabled', true);
+    // trigger the overlay and fade out the form when the user clicks the submit button and reverse that if there's any error.
+    $('#payment-form').fadeToggle(100);
+    $('#loading-overlay').fadeToggle(100);
     // It uses the stripe.confirm card payment method to send the card information securely to stripe.
     // we call the confirm card payment method.Provide the card to stripe and then execute this function on the result.
     stripe.confirmCardPayment(clientSecret, {
@@ -76,6 +79,9 @@ form.addEventListener('submit', function(ev) {
                 <span>${result.error.message}</span>`;
             // if there's an error. We'll also want to re-enable the card element and the submit button to allow the user to fix it.
             $(errorDiv).html(html);
+            // the overlay and fade out reverse if there's any error.
+            $('#payment-form').fadeToggle(100);
+            $('#loading-overlay').fadeToggle(100);
             card.update({ 'disabled': false});
             $('#submit-button').attr('disabled', false);
             // and otherwise, if the status of the payment intent comes back is succeeded we'll submit the form.
