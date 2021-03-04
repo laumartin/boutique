@@ -64,6 +64,7 @@ form.addEventListener('submit', function(ev) {
     $('#loading-overlay').fadeToggle(100);
     // It uses the stripe.confirm card payment method to send the card information securely to stripe.
     // we call the confirm card payment method.Provide the card to stripe and then execute this function on the result.
+    // stripe could potentially confirm the payment but the user could close the page before the form is submitted
     stripe.confirmCardPayment(clientSecret, {
         payment_method: {
             card: card,
