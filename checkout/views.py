@@ -65,7 +65,13 @@ def checkout(request):
         # then we iterate through the bag items to create each line item.
         order_form = OrderForm(form_data)
         if order_form.is_valid():
-            order = order_form.save()
+            # prevent multiple save events from being executed on the database
+            # by adding commit=false to prevent the 1st one from happening.
+            order = order_form.save(commit=False)
+            pid = request.POST.get('client_secret').split('_secret')[0]
+            order.stripe_pid = pid
+            order.original_bag = json.dumps(bag)
+            order.save()
             for item_id, item_data in bag.items():
                 try:
                     # we get the Product ID out of the bag

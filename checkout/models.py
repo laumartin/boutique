@@ -26,6 +26,14 @@ class Order(models.Model):
     delivery_cost = models.DecimalField(max_digits=6, decimal_places=2, null=False, default=0)
     order_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
     grand_total = models.DecimalField(max_digits=10, decimal_places=2, null=False, default=0)
+    # if a customer purchase the same things twice on separate occasions it
+    # would result in us finding the first order in the db when they place
+    # the second one and thus the second-order never being added.To avoid 
+    # add two new fields to the order model.The first is a text field that
+    # will contain the original shopping bag that created it.And the 2nd is
+    # a character field that will contain the stripe payment intent unique id
+    original_bag = models.TextField(null=False, blank=False, default='')
+    stripe_pid = models.CharField(max_length=254, null=False, blank=False, default='')
 
 # prepended with an underscore by convention to indicate it's a
 # private method which will only be used inside this class.
