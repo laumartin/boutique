@@ -28,5 +28,6 @@ urlpatterns = [
     path('products/', include('products.urls')),
     path('bag/', include('bag.urls')),
     path('checkout/', include('checkout.urls')),
+    path('profile/', include('profiles.urls')),
     # use the static function to add the MEDIA_URL to our list of URLs.
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
