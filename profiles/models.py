@@ -2,9 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from django_countries.fields import CountryField
-
 # user profile model which has a one-to-one field attached to the user.
 # is like a foreign key except that it specifies that each user can only
 # have one profile and each profile can only be attached to one user.
@@ -40,3 +38,4 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.create(user=instance)
     # Existing users: just save the profile
     instance.userprofile.save()
+
