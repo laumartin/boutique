@@ -15,7 +15,7 @@
             </div>
         </div>
         <!-- will render the shopping bag items only want to do that if there's a grand total.-->
-        {% if grand_total %}
+        {% if grand_total and not on_profile_page %}
             <p class="logo-font bg-white text-black py-1">Your bag {{ product_count }}</p>
             <div class="bag-notification-wrapper">
                 <!-- For each item in the bag we'll render a new row split into columns of three and nine.
