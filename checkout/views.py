@@ -6,6 +6,8 @@ from django.conf import settings
 from .forms import OrderForm
 from .models import Order, OrderLineItem
 from products.models import Product
+from profiles.models import UserProfile
+from profiles.forms import UserProfileForm
 # all that function returns is a Python dictionary.
 from bag.contexts import bag_contents
 
@@ -134,8 +136,28 @@ def checkout(request):
             amount=stripe_total,
             currency=settings.STRIPE_CURRENCY,
         )
-
-        order_form = OrderForm()
+        # Since users now have profiles we can use their default delivery info
+        #  to pre-fill the form on the checkout page by checking whether user
+        # is authenticated,if so, get their profile and use the initial
+        # parameter on the order form to pre-fill all its fields
+        if request.user.is_authenticated:
+            try:
+                profile = UserProfile.objects.get(user=request.user)
+                order_form = OrderForm(initial={
+                    'full_name': profile.user.get_full_name(),
+                    'email': profile.user.email,
+                    'phone_number': profile.default_phone_number,
+                    'country': profile.default_country,
+                    'postcode': profile.default_postcode,
+                    'town_or_city': profile.default_town_or_city,
+                    'street_address1': profile.default_street_address1,
+                    'street_address2': profile.default_street_address2,
+                    'county': profile.default_county,
+                })
+            except UserProfile.DoesNotExist:
+                order_form = OrderForm()
+        else:
+            order_form = OrderForm()
 
     if not stripe_public_key:
         messages.warning(request, 'Stripe public key is missing. \
@@ -160,6 +182,35 @@ def checkout_success(request, order_number):
     # use the order number to get the order created in the previous view
     # which we'll send back to the template
     order = get_object_or_404(Order, order_number=order_number)
+
+    # check if the user is authenticated because if so they'll have a
+    # profile that was created when they created their account.
+    if request.user.is_authenticated:
+        profile = UserProfile.objects.get(user=request.user)
+        # Attach the user's profile to the order
+        order.user_profile = profile
+        order.save()
+
+        # Save the user's info. The dictionaries keys will match the
+        # fields on the user profile model.
+        if save_info:
+            profile_data = {
+                'default_phone_number': order.phone_number,
+                'default_country': order.country,
+                'default_postcode': order.postcode,
+                'default_town_or_city': order.town_or_city,
+                'default_street_address1': order.street_address1,
+                'default_street_address2': order.street_address2,
+                'default_county': order.county,
+            }
+            # create an instance of user profile form, using the profile data
+            # we're going to update the profile we've obtained above and if
+            # the form is valid just save it.
+            user_profile_form = UserProfileForm(profile_data, instance=profile)
+            if user_profile_form.is_valid():
+                user_profile_form.save()
+
+
     # attach success message letting user know what their order number is.
     messages.success(request, f'Order successfully processed! \
         Your order number is {order_number}. A confirmation \
