@@ -2,6 +2,7 @@ from django.http import HttpResponse
 
 from .models import Order, OrderLineItem
 from products.models import Product
+from profiles.models import UserProfile
 
 import json
 import time
@@ -53,6 +54,29 @@ class StripeWH_Handler:
             if value == "":
                 shipping_details.address[field] = None
 
+        # Update profile information if save_info was checked
+        # begin with profile set to none so we know we can still allow
+        # anonymous users to checkout.
+        profile = None
+        # get the username from intent.metadata.username then if the
+        # username isn't anonymous user. We know they were authenticated.
+        username = intent.metadata.username
+        # try to get their profile using their username.If they've got the
+        # save info box checked which comes from the metadata we added.
+        # Then update their profile by adding the shipping details as
+        # their default delivery information.Then save the profile
+        if username != 'AnonymousUser':
+            profile = UserProfile.objects.get(user__username=username)
+            if save_info:
+                profile.default_phone_number = shipping_details.phone
+                profile.default_country = shipping_details.address.country
+                profile.default_postcode = shipping_details.address.postal_code
+                profile.default_town_or_city = shipping_details.address.city
+                profile.default_street_address1 = shipping_details.address.line1
+                profile.default_street_address2 = shipping_details.address.line2
+                profile.default_county = shipping_details.address.state
+                profile.save()
+
         # let's assume order doesn't exist
         order_exists = False
         # Instead of just immediately create the order if it's not
@@ -99,6 +123,7 @@ class StripeWH_Handler:
             try:
                 order = Order.objects.create(
                     full_name=shipping_details.name,
+                    user_profile=profile,
                     email=billing_details.email,
                     phone_number=shipping_details.phone,
                     country=shipping_details.address.country,
