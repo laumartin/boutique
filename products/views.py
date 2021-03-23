@@ -7,7 +7,7 @@ from django.db.models.functions import Lower
 # we should grab those categories anyway so we can display for the user
 # which categories they currently have selected.For that,import category
 from .models import Product, Category
-# Create your views here.
+from .forms import ProductForm
 
 
 def all_products(request):
@@ -115,4 +115,14 @@ def product_detail(request, product_id):
 
     # need a context since we'll need to send some things back to the template
     return render(request, 'products/product_detail.html', context)
-  
+
+
+def add_product(request):
+    """ Add a product to the store """
+    form = ProductForm()
+    template = 'products/add_product.html'
+    context = {
+        'form': form,
+    }
+
+    return render(request, template, context)
