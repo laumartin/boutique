@@ -54,7 +54,8 @@ INSTALLED_APPS = [
     'profiles',
 
     # Other
-    'crispy_forms'
+    'crispy_forms',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -215,6 +216,34 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 # And use the static function to add the MEDIA_URL to our list of URLs.
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# To connect Django with S3 and tell it which AWS bucket it should
+# be communicating with
+if 'USE_AWS' in os.environ:
+    # Bucket Config
+    AWS_STORAGE_BUCKET_NAME = 'lau-boutique'
+    AWS_S3_REGION_NAME = 'eu-west-2'
+    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    # tell django where our static files will be coming from in production
+    # which is going to be our bucket name.s3.amazonaws.com
+    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+
+    # Static and media files
+    # for static file storage we want to use our storage class created
+    # in custom_storages.py and location it should save static files is
+    # a folder called static,and then do the same thing for media files by
+    # using the default file storage and media files location settings.
+    STATICFILES_STORAGE = 'custom_storages.StaticStorage'
+    STATICFILES_LOCATION = 'static'
+    DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+    MEDIAFILES_LOCATION = 'media'
+
+    # Override static and media URLs in production and explicitly set the
+    # URLs for static and media files,using our custom domain and new locations
+    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATICFILES_LOCATION}/'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{MEDIAFILES_LOCATION}/'
+
 
 # add 2 new variables which will be used to calculate delivery costs
 FREE_DELIVERY_THRESHOLD = 50
