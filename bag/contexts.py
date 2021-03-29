@@ -62,8 +62,6 @@ def bag_contents(request):
                     'product': product,
                     'size': size
                 })
-
-
     # customers have free delivery if they spend more than the amount
     # specified in the free delivery threshold in settings.py.
     # If it is less than threshold we'll calculate delivery as total
@@ -95,5 +93,4 @@ def bag_contents(request):
     }
 
     return context
-
 
